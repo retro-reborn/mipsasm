@@ -22,39 +22,34 @@ int parse_register(const char *reg_str) {
         return -1;
     }
     
-    // Named registers
-    if (strcmp(reg_str, "zero") == 0) return REG_ZERO;
-    if (strcmp(reg_str, "at") == 0) return REG_AT;
-    if (strcmp(reg_str, "v0") == 0) return REG_V0;
-    if (strcmp(reg_str, "v1") == 0) return REG_V1;
-    if (strcmp(reg_str, "a0") == 0) return REG_A0;
-    if (strcmp(reg_str, "a1") == 0) return REG_A1;
-    if (strcmp(reg_str, "a2") == 0) return REG_A2;
-    if (strcmp(reg_str, "a3") == 0) return REG_A3;
-    if (strcmp(reg_str, "t0") == 0) return REG_T0;
-    if (strcmp(reg_str, "t1") == 0) return REG_T1;
-    if (strcmp(reg_str, "t2") == 0) return REG_T2;
-    if (strcmp(reg_str, "t3") == 0) return REG_T3;
-    if (strcmp(reg_str, "t4") == 0) return REG_T4;
-    if (strcmp(reg_str, "t5") == 0) return REG_T5;
-    if (strcmp(reg_str, "t6") == 0) return REG_T6;
-    if (strcmp(reg_str, "t7") == 0) return REG_T7;
-    if (strcmp(reg_str, "s0") == 0) return REG_S0;
-    if (strcmp(reg_str, "s1") == 0) return REG_S1;
-    if (strcmp(reg_str, "s2") == 0) return REG_S2;
-    if (strcmp(reg_str, "s3") == 0) return REG_S3;
-    if (strcmp(reg_str, "s4") == 0) return REG_S4;
-    if (strcmp(reg_str, "s5") == 0) return REG_S5;
-    if (strcmp(reg_str, "s6") == 0) return REG_S6;
-    if (strcmp(reg_str, "s7") == 0) return REG_S7;
-    if (strcmp(reg_str, "t8") == 0) return REG_T8;
-    if (strcmp(reg_str, "t9") == 0) return REG_T9;
-    if (strcmp(reg_str, "k0") == 0) return REG_K0;
-    if (strcmp(reg_str, "k1") == 0) return REG_K1;
-    if (strcmp(reg_str, "gp") == 0) return REG_GP;
-    if (strcmp(reg_str, "sp") == 0) return REG_SP;
-    if (strcmp(reg_str, "fp") == 0) return REG_FP;
-    if (strcmp(reg_str, "ra") == 0) return REG_RA;
+    // Named registers - use lookup table
+    static const struct {
+        const char *name;
+        int reg_num;
+    } reg_table[] = {
+        {"zero", REG_ZERO}, {"at", REG_AT},   
+        {"v0", REG_V0},     {"v1", REG_V1},
+        {"a0", REG_A0},     {"a1", REG_A1},   
+        {"a2", REG_A2},     {"a3", REG_A3},
+        {"t0", REG_T0},     {"t1", REG_T1},   
+        {"t2", REG_T2},     {"t3", REG_T3},
+        {"t4", REG_T4},     {"t5", REG_T5},   
+        {"t6", REG_T6},     {"t7", REG_T7},
+        {"s0", REG_S0},     {"s1", REG_S1},   
+        {"s2", REG_S2},     {"s3", REG_S3},
+        {"s4", REG_S4},     {"s5", REG_S5},   
+        {"s6", REG_S6},     {"s7", REG_S7},
+        {"t8", REG_T8},     {"t9", REG_T9},   
+        {"k0", REG_K0},     {"k1", REG_K1},
+        {"gp", REG_GP},     {"sp", REG_SP},   
+        {"fp", REG_FP},     {"ra", REG_RA}
+    };
+    
+    for (size_t i = 0; i < sizeof(reg_table)/sizeof(reg_table[0]); i++) {
+        if (strcmp(reg_str, reg_table[i].name) == 0) {
+            return reg_table[i].reg_num;
+        }
+    }
     
     return -1;
 }
@@ -63,64 +58,35 @@ int parse_register(const char *reg_str) {
 instruction_type_t parse_instruction(const char *mnemonic) {
     if (!mnemonic) return INST_UNKNOWN;
     
-    if (strcmp(mnemonic, "lui") == 0) return INST_LUI;
-    if (strcmp(mnemonic, "li") == 0) return INST_LI;
-    if (strcmp(mnemonic, "addiu") == 0) return INST_ADDIU;
-    if (strcmp(mnemonic, "addi") == 0) return INST_ADDI;
-    if (strcmp(mnemonic, "sw") == 0) return INST_SW;
-    if (strcmp(mnemonic, "lw") == 0) return INST_LW;
-    if (strcmp(mnemonic, "bnez") == 0) return INST_BNEZ;
-    if (strcmp(mnemonic, "beqz") == 0) return INST_BEQZ;
-    if (strcmp(mnemonic, "beq") == 0) return INST_BEQ;
-    if (strcmp(mnemonic, "bne") == 0) return INST_BNE;
-    if (strcmp(mnemonic, "b") == 0) return INST_B;
-    if (strcmp(mnemonic, "j") == 0) return INST_J;
-    if (strcmp(mnemonic, "jal") == 0) return INST_JAL;
-    if (strcmp(mnemonic, "nop") == 0) return INST_NOP;
-    if (strcmp(mnemonic, "andi") == 0) return INST_ANDI;
-    if (strcmp(mnemonic, "ori") == 0) return INST_ORI;
-    if (strcmp(mnemonic, "xori") == 0) return INST_XORI;
+    static const struct {
+        const char *name;
+        instruction_type_t type;
+    } inst_table[] = {
+        {"lui", INST_LUI},       {"li", INST_LI},         {"addiu", INST_ADDIU}, 
+        {"addi", INST_ADDI},     {"sw", INST_SW},         {"lw", INST_LW},
+        {"bnez", INST_BNEZ},     {"beqz", INST_BEQZ},     {"beq", INST_BEQ},
+        {"bne", INST_BNE},       {"b", INST_B},           {"j", INST_J},
+        {"jal", INST_JAL},       {"nop", INST_NOP},       {"andi", INST_ANDI},
+        {"ori", INST_ORI},       {"xori", INST_XORI},     {"add", INST_ADD},
+        {"sub", INST_SUB},       {"and", INST_AND},       {"or", INST_OR},
+        {"xor", INST_XOR},       {"sll", INST_SLL},       {"srl", INST_SRL},
+        {"sra", INST_SRA},       {"sllv", INST_SLLV},     {"srlv", INST_SRLV},
+        {"srav", INST_SRAV},     {"slt", INST_SLT},       {"sltu", INST_SLTU},
+        {"jr", INST_JR},         {"jalr", INST_JALR},     {"mfhi", INST_MFHI},
+        {"mflo", INST_MFLO},     {"mthi", INST_MTHI},     {"mtlo", INST_MTLO},
+        {"mult", INST_MULT},     {"multu", INST_MULTU},   {"div", INST_DIV},
+        {"divu", INST_DIVU},     {"syscall", INST_SYSCALL}, {"break", INST_BREAK},
+        {"slti", INST_SLTI},     {"sltiu", INST_SLTIU},   {"lb", INST_LB},
+        {"lbu", INST_LBU},       {"lh", INST_LH},         {"lhu", INST_LHU},
+        {"sb", INST_SB},         {"sh", INST_SH},         {"la", INST_LA},
+        {"move", INST_MOVE}
+    };
     
-    // R-type instructions
-    if (strcmp(mnemonic, "add") == 0) return INST_ADD;
-    if (strcmp(mnemonic, "sub") == 0) return INST_SUB;
-    if (strcmp(mnemonic, "and") == 0) return INST_AND;
-    if (strcmp(mnemonic, "or") == 0) return INST_OR;
-    if (strcmp(mnemonic, "xor") == 0) return INST_XOR;
-    if (strcmp(mnemonic, "sll") == 0) return INST_SLL;
-    if (strcmp(mnemonic, "srl") == 0) return INST_SRL;
-    if (strcmp(mnemonic, "sra") == 0) return INST_SRA;
-    if (strcmp(mnemonic, "sllv") == 0) return INST_SLLV;
-    if (strcmp(mnemonic, "srlv") == 0) return INST_SRLV;
-    if (strcmp(mnemonic, "srav") == 0) return INST_SRAV;
-    if (strcmp(mnemonic, "slt") == 0) return INST_SLT;
-    if (strcmp(mnemonic, "sltu") == 0) return INST_SLTU;
-    if (strcmp(mnemonic, "jr") == 0) return INST_JR;
-    if (strcmp(mnemonic, "jalr") == 0) return INST_JALR;
-    if (strcmp(mnemonic, "mfhi") == 0) return INST_MFHI;
-    if (strcmp(mnemonic, "mflo") == 0) return INST_MFLO;
-    if (strcmp(mnemonic, "mthi") == 0) return INST_MTHI;
-    if (strcmp(mnemonic, "mtlo") == 0) return INST_MTLO;
-    if (strcmp(mnemonic, "mult") == 0) return INST_MULT;
-    if (strcmp(mnemonic, "multu") == 0) return INST_MULTU;
-    if (strcmp(mnemonic, "div") == 0) return INST_DIV;
-    if (strcmp(mnemonic, "divu") == 0) return INST_DIVU;
-    if (strcmp(mnemonic, "syscall") == 0) return INST_SYSCALL;
-    if (strcmp(mnemonic, "break") == 0) return INST_BREAK;
-    
-    // Additional I-type instructions
-    if (strcmp(mnemonic, "slti") == 0) return INST_SLTI;
-    if (strcmp(mnemonic, "sltiu") == 0) return INST_SLTIU;
-    if (strcmp(mnemonic, "lb") == 0) return INST_LB;
-    if (strcmp(mnemonic, "lbu") == 0) return INST_LBU;
-    if (strcmp(mnemonic, "lh") == 0) return INST_LH;
-    if (strcmp(mnemonic, "lhu") == 0) return INST_LHU;
-    if (strcmp(mnemonic, "sb") == 0) return INST_SB;
-    if (strcmp(mnemonic, "sh") == 0) return INST_SH;
-    
-    // Pseudo-instructions
-    if (strcmp(mnemonic, "la") == 0) return INST_LA;
-    if (strcmp(mnemonic, "move") == 0) return INST_MOVE;
+    for (size_t i = 0; i < sizeof(inst_table) / sizeof(inst_table[0]); i++) {
+        if (strcmp(mnemonic, inst_table[i].name) == 0) {
+            return inst_table[i].type;
+        }
+    }
     
     return INST_UNKNOWN;
 }
@@ -1198,12 +1164,10 @@ void handle_directive(assembler_ctx_t *ctx, const char *directive, char **savept
     
     // Handle section directives (.text, .data)
     if (strcmp(directive, "text") == 0) {
-        // Just ignore these for now - in a more complex assembler
-        // we would switch to the text section
+        // TODO: handle .text section
         return;
     } else if (strcmp(directive, "data") == 0) {
-        // Just ignore these for now - in a more complex assembler
-        // we would switch to the data section
+        // TODO: handle .data section
         return;
     } else if (strcmp(directive, "word") == 0) {
         // .word directive - add 32-bit words
@@ -1288,7 +1252,7 @@ void handle_directive(assembler_ctx_t *ctx, const char *directive, char **savept
             }
         }
     }
-    // Ignore other directives
+    // TODO: Handle other directives
 }
 
 // Main assembler function
