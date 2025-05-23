@@ -1,0 +1,10 @@
+# Binary files
+*.bin
+
+# Build files
+build/
+*.d
+*.o
+
+# bin
+bin/
