@@ -7,10 +7,10 @@ A MIPS assembly language compiler that compiles MIPS assembly code into binary f
   - I-type instructions (ADDI, ADDIU, ANDI, ORI, XORI, LW, SW, BEQ, BNE, etc.)
   - J-type instructions (J, JAL)
   - Pseudo-instructions (LI, LA, MOVE, etc.)
+- Text and data sections with standard memory layout
 - Two-pass assembly for resolving labels
 - Supports common assembler directives (.word, .byte, .half, .space, .align, .ascii, .asciiz)
 - Support for symbolic labels
-- Comprehensive error checking
 
 ## Building
 To build the assembler, run:
