@@ -1,5 +1,5 @@
 # MIPS Assembler
-A full-featured MIPS assembly language compiler that compiles MIPS assembly code into binary format.
+A MIPS assembly language compiler that compiles MIPS assembly code into binary format.
 
 ## Features
 - Supports a wide range of MIPS instructions including:
